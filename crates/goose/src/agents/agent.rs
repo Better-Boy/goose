@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::future::Future;
+use std::path::Path;
 use std::pin::Pin;
 use std::sync::Arc;
 
@@ -468,7 +469,7 @@ impl Agent {
                 .map(Value::Object)
                 .unwrap_or(Value::Object(serde_json::Map::new()));
 
-            let task_config = TaskConfig::new(provider);
+            let task_config = TaskConfig::new(provider, parent_session_id);
             subagent_execute_task_tool::run_tasks(
                 arguments,
                 task_config,
