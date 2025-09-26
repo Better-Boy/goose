@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 use std::future::Future;
-use std::path::Path;
 use std::pin::Pin;
 use std::sync::Arc;
 
@@ -66,8 +65,6 @@ use crate::agents::todo_tools::{
     todo_read_tool, todo_write_tool, TODO_READ_TOOL_NAME, TODO_WRITE_TOOL_NAME,
 };
 use crate::conversation::message::{Message, ToolRequest};
-use crate::session::extension_data::ExtensionState;
-use crate::session::{extension_data, SessionManager};
 
 const DEFAULT_MAX_TURNS: u32 = 1000;
 
@@ -468,6 +465,7 @@ impl Agent {
                 .clone()
                 .map(Value::Object)
                 .unwrap_or(Value::Object(serde_json::Map::new()));
+            let parent_session_id = session.as_ref().map(|s| s.id.to_string());
 
             let task_config = TaskConfig::new(provider, parent_session_id);
             subagent_execute_task_tool::run_tasks(
