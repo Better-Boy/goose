@@ -468,6 +468,7 @@ impl Agent {
             let parent_session_id = session.as_ref().map(|s| s.id.to_string());
 
             let task_config = TaskConfig::new(provider, parent_session_id);
+
             subagent_execute_task_tool::run_tasks(
                 arguments,
                 task_config,
