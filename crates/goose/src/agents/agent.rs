@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::future::Future;
+use std::path::PathBuf;
 use std::pin::Pin;
 use std::sync::Arc;
 
@@ -466,7 +467,12 @@ impl Agent {
                 .as_ref()
                 .map(|s| s.id.to_string())
                 .unwrap_or_default();
-            let task_config = TaskConfig::new(provider, parent_session_id);
+            let parent_working_dir = session
+                .as_ref()
+                .map(|s| s.working_dir.clone())
+                .unwrap_or_else(|| std::env::current_dir().unwrap_or_else(|_| PathBuf::from(".")));
+
+            let task_config = TaskConfig::new(provider, parent_session_id, parent_working_dir);
             let arguments = tool_call
                 .arguments
                 .clone()

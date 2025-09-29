@@ -99,9 +99,7 @@ fn get_agent_messages(
             .await
             .map_err(|e| anyhow!("Failed to create AgentManager: {}", e))?;
         let parent_session_id = task_config.parent_session_id;
-
-        let current_dir = std::env::current_dir()
-            .map_err(|e| anyhow!("Failed to get current directory for sub agent: {}", e))?;
+        let current_dir = task_config.parent_working_dir;
         let session = SessionManager::create_session(
             current_dir.clone(),
             format!("Subagent task for: {}", parent_session_id),

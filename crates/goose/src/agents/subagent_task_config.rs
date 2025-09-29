@@ -1,6 +1,7 @@
 use crate::providers::base::Provider;
 use std::env;
 use std::fmt;
+use std::path::PathBuf;
 use std::sync::Arc;
 use uuid::Uuid;
 
@@ -16,6 +17,7 @@ pub struct TaskConfig {
     pub id: String,
     pub provider: Arc<dyn Provider>,
     pub parent_session_id: String,
+    pub parent_working_dir: PathBuf,
     pub max_turns: Option<usize>,
     pub extensions: Option<Vec<crate::agents::extension::ExtensionConfig>>,
 }
@@ -33,11 +35,16 @@ impl fmt::Debug for TaskConfig {
 
 impl TaskConfig {
     /// Create a new TaskConfig with all required dependencies
-    pub fn new(provider: Arc<dyn Provider>, parent_session_id: String) -> Self {
+    pub fn new(
+        provider: Arc<dyn Provider>,
+        parent_session_id: String,
+        parent_working_dir: PathBuf,
+    ) -> Self {
         Self {
             id: Uuid::new_v4().to_string(),
             provider,
             parent_session_id,
+            parent_working_dir,
             max_turns: Some(
                 env::var(GOOSE_SUBAGENT_MAX_TURNS_ENV_VAR)
                     .ok()
