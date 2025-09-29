@@ -1,10 +1,7 @@
-use std::sync::Arc;
-
 use crate::{
     agents::{subagent_task_config::TaskConfig, AgentEvent, SessionConfig},
     conversation::{message::Message, Conversation},
     execution::{manager::AgentManager, SessionExecutionMode},
-    providers::base::Provider,
     session::SessionManager,
 };
 use anyhow::{anyhow, Result};
@@ -101,9 +98,7 @@ fn get_agent_messages(
         let agent_manager = AgentManager::instance()
             .await
             .map_err(|e| anyhow!("Failed to create AgentManager: {}", e))?;
-        let parent_session_id = task_config
-            .parent_session_id
-            .ok_or_else(|| anyhow!("Parent session ID is missing"))?;
+        let parent_session_id = task_config.parent_session_id;
 
         let current_dir = std::env::current_dir()
             .map_err(|e| anyhow!("Failed to get current directory for sub agent: {}", e))?;
@@ -123,11 +118,8 @@ fn get_agent_messages(
             )
             .await
             .map_err(|e| anyhow!("Failed to get sub agent session file path: {}", e))?;
-        let agent_provider: Arc<dyn Provider> = task_config
-            .provider
-            .ok_or_else(|| anyhow!("No provider configured for subagent"))?;
         agent
-            .update_provider(agent_provider)
+            .update_provider(task_config.provider)
             .await
             .map_err(|e| anyhow!("Failed to set provider on sub agent: {}", e))?;
 
@@ -147,8 +139,6 @@ fn get_agent_messages(
             Conversation::new_unvalidated(
                 vec![Message::user().with_text(text_instruction.clone())],
             );
-        let current_dir = std::env::current_dir()
-            .map_err(|e| anyhow!("Failed to get current directory for sub agent: {}", e))?;
         let session_config = SessionConfig {
             id: session.id,
             working_dir: current_dir,

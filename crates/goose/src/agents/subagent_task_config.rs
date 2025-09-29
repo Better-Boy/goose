@@ -14,8 +14,8 @@ pub const GOOSE_SUBAGENT_MAX_TURNS_ENV_VAR: &str = "GOOSE_SUBAGENT_MAX_TURNS";
 #[derive(Clone)]
 pub struct TaskConfig {
     pub id: String,
-    pub provider: Option<Arc<dyn Provider>>,
-    pub parent_session_id: Option<String>,
+    pub provider: Arc<dyn Provider>,
+    pub parent_session_id: String,
     pub max_turns: Option<usize>,
     pub extensions: Option<Vec<crate::agents::extension::ExtensionConfig>>,
 }
@@ -33,7 +33,7 @@ impl fmt::Debug for TaskConfig {
 
 impl TaskConfig {
     /// Create a new TaskConfig with all required dependencies
-    pub fn new(provider: Option<Arc<dyn Provider>>, parent_session_id: Option<String>) -> Self {
+    pub fn new(provider: Arc<dyn Provider>, parent_session_id: String) -> Self {
         Self {
             id: Uuid::new_v4().to_string(),
             provider,
@@ -46,10 +46,5 @@ impl TaskConfig {
             ),
             extensions: None,
         }
-    }
-
-    /// Get a reference to the provider
-    pub fn provider(&self) -> Option<&Arc<dyn Provider>> {
-        self.provider.as_ref()
     }
 }

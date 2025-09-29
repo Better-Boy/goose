@@ -461,15 +461,17 @@ impl Agent {
                 .dispatch_sub_recipe_tool_call(&tool_call.name, arguments, &self.tasks_manager)
                 .await
         } else if tool_call.name == SUBAGENT_EXECUTE_TASK_TOOL_NAME {
-            let provider = self.provider().await.ok();
+            let provider = self.provider().await.unwrap();
+            let parent_session_id = session
+                .as_ref()
+                .map(|s| s.id.to_string())
+                .unwrap_or_default();
+            let task_config = TaskConfig::new(provider, parent_session_id);
             let arguments = tool_call
                 .arguments
                 .clone()
                 .map(Value::Object)
                 .unwrap_or(Value::Object(serde_json::Map::new()));
-            let parent_session_id = session.as_ref().map(|s| s.id.to_string());
-
-            let task_config = TaskConfig::new(provider, parent_session_id);
 
             subagent_execute_task_tool::run_tasks(
                 arguments,
