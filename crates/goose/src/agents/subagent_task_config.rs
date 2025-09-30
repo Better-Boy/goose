@@ -3,7 +3,6 @@ use std::env;
 use std::fmt;
 use std::path::PathBuf;
 use std::sync::Arc;
-use uuid::Uuid;
 
 /// Default maximum number of turns for task execution
 pub const DEFAULT_SUBAGENT_MAX_TURNS: usize = 25;
@@ -14,7 +13,6 @@ pub const GOOSE_SUBAGENT_MAX_TURNS_ENV_VAR: &str = "GOOSE_SUBAGENT_MAX_TURNS";
 /// Configuration for task execution with all necessary dependencies
 #[derive(Clone)]
 pub struct TaskConfig {
-    pub id: String,
     pub provider: Arc<dyn Provider>,
     pub parent_session_id: String,
     pub parent_working_dir: PathBuf,
@@ -25,7 +23,6 @@ pub struct TaskConfig {
 impl fmt::Debug for TaskConfig {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("TaskConfig")
-            .field("id", &self.id)
             .field("provider", &"<dyn Provider>")
             .field("max_turns", &self.max_turns)
             .field("extensions", &self.extensions)
@@ -41,7 +38,6 @@ impl TaskConfig {
         parent_working_dir: PathBuf,
     ) -> Self {
         Self {
-            id: Uuid::new_v4().to_string(),
             provider,
             parent_session_id,
             parent_working_dir,
