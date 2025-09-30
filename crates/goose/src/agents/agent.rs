@@ -462,7 +462,19 @@ impl Agent {
                 .dispatch_sub_recipe_tool_call(&tool_call.name, arguments, &self.tasks_manager)
                 .await
         } else if tool_call.name == SUBAGENT_EXECUTE_TASK_TOOL_NAME {
-            let provider = self.provider().await.unwrap();
+            let provider = match self.provider().await {
+                Ok(p) => p,
+                Err(_) => {
+                    return (
+                        request_id,
+                        Err(ErrorData::new(
+                            ErrorCode::INTERNAL_ERROR,
+                            "Provider is required".to_string(),
+                            None,
+                        )),
+                    );
+                }
+            };
             let parent_session_id = session
                 .as_ref()
                 .map(|s| s.id.to_string())
