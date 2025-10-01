@@ -1120,6 +1120,76 @@
         }
       }
     },
+    "/sampling/approve": {
+      "post": {
+        "tags": [
+          "super::routes::sampling"
+        ],
+        "operationId": "handle_sampling_approval",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SamplingApprovalRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Sampling approval processed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SamplingResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid secret key"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/sampling/request": {
+      "post": {
+        "tags": [
+          "super::routes::sampling"
+        ],
+        "operationId": "handle_sampling_request",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SamplingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Sampling request received",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid secret key"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
     "/schedule/create": {
       "post": {
         "tags": [
@@ -3514,6 +3584,138 @@
         "properties": {
           "session_id": {
             "type": "string"
+          }
+        }
+      },
+      "SamplingApprovalRequest": {
+        "type": "object",
+        "required": [
+          "session_id",
+          "original_request",
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "type": "string",
+            "description": "The user's action: approve, deny, or edit"
+          },
+          "edited_messages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SamplingMessage"
+            },
+            "description": "If action is \"edit\", this contains the edited messages",
+            "nullable": true
+          },
+          "original_request": {
+            "$ref": "#/components/schemas/SamplingRequest"
+          },
+          "session_id": {
+            "type": "string",
+            "description": "The session ID for the current agent session"
+          }
+        }
+      },
+      "SamplingMessage": {
+        "type": "object",
+        "required": [
+          "role",
+          "content"
+        ],
+        "properties": {
+          "content": {
+            "$ref": "#/components/schemas/Content"
+          },
+          "role": {
+            "$ref": "#/components/schemas/Role"
+          }
+        }
+      },
+      "SamplingRequest": {
+        "type": "object",
+        "required": [
+          "session_id",
+          "extension_name",
+          "messages",
+          "max_tokens"
+        ],
+        "properties": {
+          "extension_name": {
+            "type": "string",
+            "description": "The extension name that is making the sampling request"
+          },
+          "include_context": {
+            "type": "string",
+            "description": "Whether to include context",
+            "nullable": true
+          },
+          "max_tokens": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Maximum tokens to generate"
+          },
+          "messages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SamplingMessage"
+            },
+            "description": "The messages to send to the LLM"
+          },
+          "metadata": {
+            "description": "Additional metadata",
+            "nullable": true
+          },
+          "model_preferences": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Optional model preferences",
+            "nullable": true
+          },
+          "session_id": {
+            "type": "string",
+            "description": "The session ID for the current agent session"
+          },
+          "stop_sequences": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Stop sequences",
+            "nullable": true
+          },
+          "system_prompt": {
+            "type": "string",
+            "description": "Optional system prompt",
+            "nullable": true
+          },
+          "temperature": {
+            "type": "number",
+            "format": "double",
+            "description": "Temperature for the model",
+            "nullable": true
+          }
+        }
+      },
+      "SamplingResponse": {
+        "type": "object",
+        "required": [
+          "message",
+          "model"
+        ],
+        "properties": {
+          "message": {
+            "$ref": "#/components/schemas/SamplingMessage"
+          },
+          "model": {
+            "type": "string",
+            "description": "The model used for generation"
+          },
+          "stop_reason": {
+            "type": "string",
+            "description": "The reason for stopping",
+            "nullable": true
           }
         }
       },

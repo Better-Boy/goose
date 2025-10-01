@@ -695,6 +695,82 @@ export type RunNowResponse = {
     session_id: string;
 };
 
+export type SamplingApprovalRequest = {
+    /**
+     * The user's action: approve, deny, or edit
+     */
+    action: string;
+    /**
+     * If action is "edit", this contains the edited messages
+     */
+    edited_messages?: Array<SamplingMessage> | null;
+    original_request: SamplingRequest;
+    /**
+     * The session ID for the current agent session
+     */
+    session_id: string;
+};
+
+export type SamplingMessage = {
+    content: Content;
+    role: Role;
+};
+
+export type SamplingRequest = {
+    /**
+     * The extension name that is making the sampling request
+     */
+    extension_name: string;
+    /**
+     * Whether to include context
+     */
+    include_context?: string | null;
+    /**
+     * Maximum tokens to generate
+     */
+    max_tokens: number;
+    /**
+     * The messages to send to the LLM
+     */
+    messages: Array<SamplingMessage>;
+    /**
+     * Additional metadata
+     */
+    metadata?: unknown;
+    /**
+     * Optional model preferences
+     */
+    model_preferences?: Array<string> | null;
+    /**
+     * The session ID for the current agent session
+     */
+    session_id: string;
+    /**
+     * Stop sequences
+     */
+    stop_sequences?: Array<string> | null;
+    /**
+     * Optional system prompt
+     */
+    system_prompt?: string | null;
+    /**
+     * Temperature for the model
+     */
+    temperature?: number | null;
+};
+
+export type SamplingResponse = {
+    message: SamplingMessage;
+    /**
+     * The model used for generation
+     */
+    model: string;
+    /**
+     * The reason for stopping
+     */
+    stop_reason?: string | null;
+};
+
 export type ScanRecipeRequest = {
     recipe: Recipe;
 };
@@ -1799,6 +1875,58 @@ export type ScanRecipeResponses = {
 };
 
 export type ScanRecipeResponse2 = ScanRecipeResponses[keyof ScanRecipeResponses];
+
+export type HandleSamplingApprovalData = {
+    body: SamplingApprovalRequest;
+    path?: never;
+    query?: never;
+    url: '/sampling/approve';
+};
+
+export type HandleSamplingApprovalErrors = {
+    /**
+     * Unauthorized - invalid secret key
+     */
+    401: unknown;
+    /**
+     * Internal server error
+     */
+    500: unknown;
+};
+
+export type HandleSamplingApprovalResponses = {
+    /**
+     * Sampling approval processed
+     */
+    200: SamplingResponse;
+};
+
+export type HandleSamplingApprovalResponse = HandleSamplingApprovalResponses[keyof HandleSamplingApprovalResponses];
+
+export type HandleSamplingRequestData = {
+    body: SamplingRequest;
+    path?: never;
+    query?: never;
+    url: '/sampling/request';
+};
+
+export type HandleSamplingRequestErrors = {
+    /**
+     * Unauthorized - invalid secret key
+     */
+    401: unknown;
+    /**
+     * Internal server error
+     */
+    500: unknown;
+};
+
+export type HandleSamplingRequestResponses = {
+    /**
+     * Sampling request received
+     */
+    200: unknown;
+};
 
 export type CreateScheduleData = {
     body: CreateScheduleRequest;

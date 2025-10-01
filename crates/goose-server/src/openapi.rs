@@ -317,6 +317,8 @@ derive_utoipa!(ResourceContents as ResourceContentsSchema);
 derive_utoipa!(JsonObject as JsonObjectSchema);
 derive_utoipa!(Icon as IconSchema);
 
+
+
 #[derive(OpenApi)]
 #[openapi(
     paths(
@@ -370,6 +372,8 @@ derive_utoipa!(Icon as IconSchema);
         super::routes::recipe::delete_recipe,
         super::routes::setup::start_openrouter_setup,
         super::routes::setup::start_tetrate_setup,
+        super::routes::sampling::handle_sampling_request,
+        super::routes::sampling::handle_sampling_approval,
     ),
     components(schemas(
         super::routes::config_management::UpsertConfigQuery,
@@ -470,6 +474,10 @@ derive_utoipa!(Icon as IconSchema);
         super::routes::agent::ResumeAgentRequest,
         super::routes::agent::ErrorResponse,
         super::routes::setup::SetupResponse,
+        super::routes::sampling::SamplingRequest,
+        super::routes::sampling::SamplingResponse,
+        super::routes::sampling::SamplingApprovalRequest,
+        super::routes::sampling::SamplingMessage,
     ))
 )]
 pub struct ApiDoc;
